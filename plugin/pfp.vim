@@ -188,8 +188,8 @@ def pfp_format_hex_line(data):
 PY3 = sys.version_info[0] == 3
 PY2 = sys.version_info[0] == 2
 def pfp_data_to_str(data):
-	if PY3:
-		return data.encode("utf-8")
+	if PY3 and hasattr(data, "decode"):
+		return data.decode("utf-8")
 	else:
 		return data
 
