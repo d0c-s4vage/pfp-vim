@@ -369,6 +369,8 @@ def pfp_dom_cursor_moved():
 	vim.command("match none")
 	vim.command("2match none")
 	vim.command("3match none")
+	move_to(start_line, start_col)
+	vim.command("silent! normal! zz")
 
 	if end_line != start_line:
 		first_line_end_col = 4 + (3 * 0x10)
