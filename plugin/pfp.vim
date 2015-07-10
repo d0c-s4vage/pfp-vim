@@ -291,7 +291,7 @@ def pfp_parse():
 
 	create_scratch(
 		dom._pfp__show(include_offset=True),
-		width = total_width/2,
+		width = int(total_width/2), # yes, explicitly make it an int b/c of python3
 		fit_to_contents = False,
 		scratch_name = name.replace("__PFP_HEX__", "__PFP__DOM__")
 	)
