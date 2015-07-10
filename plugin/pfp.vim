@@ -211,9 +211,9 @@ def pfp_printable_line(data):
 	
 	if len(res) < 0x10:
 		if PY3:
-			res += " " * (0x10 - len(res))
-		else:
 			res += b" " * (0x10 - len(res))
+		else:
+			res += " " * (0x10 - len(res))
 
 	res = pfp_data_to_str(res)
 	
