@@ -185,8 +185,17 @@ def pfp_format_hex_line(data):
 		parts += ["  "] * (0x10 - len(parts))
 	return " ".join(parts)
 
+PY3 = sys.version_info[0] == 3
+PY2 = sys.version_info[0] == 2
+def pfp_data_to_str(data):
+	if PY3:
+		return data.encode("utf-8")
+	else:
+		return data
+
 def pfp_printable_line(data):
 	res = ""
+	data = pfp_data_to_str(data)
 	for x in range(len(data)):
 		char = data[x:x+1]
 		val = ord(char)
