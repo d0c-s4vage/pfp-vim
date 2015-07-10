@@ -194,18 +194,28 @@ def pfp_data_to_str(data):
 		return data
 
 def pfp_printable_line(data):
-	res = ""
-	data = pfp_data_to_str(data)
+	if PY3:
+		res = b""
+	else:
+		res = ""
 	for x in range(len(data)):
 		char = data[x:x+1]
 		val = ord(char)
 		if 0x20 <= val <= 0x7e:
 			res += char
 		else:
-			res += "."
+			if PY3:
+				res += b"."
+			else:
+				res += "."
 	
 	if len(res) < 0x10:
-		res += " " * (0x10 - len(res))
+		if PY3:
+			res += " " * (0x10 - len(res))
+		else:
+			res += b" " * (0x10 - len(res))
+
+	res = pfp_data_to_str(res)
 	
 	return res
 
