@@ -29,6 +29,12 @@ class Colors:
 	FAIL = '\033[91m'
 	ENDC = '\033[0m'
 
+def buff_exists(name):
+	"""
+	Return true or false if the buffer named `name` exists
+	"""
+	return buffwinnr(name) != -1
+
 def buff_clear():
 	vim.command("silent %delete _")
 
