@@ -140,7 +140,7 @@ def buffwinnr(name):
 	return int(vim.eval("bufwinnr('" + name + "')"))
 
 def move_to(line, column):
-	vim.command("call setpos('.', [0,{},{}])".format(
+	vim.eval("setpos('.', [0,{},{}])".format(
 		line,
 		column
 	))
@@ -321,11 +321,6 @@ def pfp_getline(line=None):
 	else:
 		return res[0]
 
-def pfp_get_line_col(offset):
-	line = (offset // 0x10) + 3
-	offset = 5 + ((offset % 0x10) * 3)
-	return (line, offset)
-
 def pfp_get_space_and_offset(lineno):
 	line = pfp_getline(lineno)
 	if line is None:
@@ -339,6 +334,71 @@ def pfp_get_space_and_offset(lineno):
 		return (spacing, offset)
 	else:
 		return (None, None)
+
+def pfp_highlight(start_line, end_line, start_col, end_col):
+	vim.eval("matchadd('pfp_hex_selection', '\\%>{start_line}l\\%<{end_line}l\\%>{start_col}c\\%<{end_col}c')".format(
+		start_line=start_line-1,
+		end_line=end_line+1,
+		start_col=start_col,
+		end_col=end_col+3
+		)
+	)
+
+def pfp_hex_allign_x(address):
+	start_offset = max(4, len(hex(address)) - 2) + 1
+	return (address % 0x10) * 3 + start_offset
+
+def pfp_hex_allign_y(address):
+	return address // 0x10 + 3
+
+def pfp_hex_match_range(s_offset, e_offset):
+	"""
+	match the area in the hex buffer between s_offset and e_offset 
+
+	"""
+	if s_offset % 0x10 != 0:
+		if pfp_hex_allign_y(s_offset) == pfp_hex_allign_y(e_offset): #start and end on the same line
+			pfp_highlight(
+				pfp_hex_allign_y(s_offset),
+				pfp_hex_allign_y(e_offset),
+				pfp_hex_allign_x(s_offset),
+				pfp_hex_allign_x(e_offset)
+			)
+			return
+		else: #start and end on different lines
+			pfp_highlight(
+				pfp_hex_allign_y(s_offset),
+				pfp_hex_allign_y(s_offset),
+				pfp_hex_allign_x(s_offset),
+				pfp_hex_allign_x(s_offset|0xf)
+			)
+			pfp_hex_match_range((s_offset|0xf) + 1, e_offset) #calls itself to procede drawing further than first line
+			return
+
+	if (e_offset + 1) % 0x10 != 0: # is the end offset alligned?
+		pfp_highlight(
+			pfp_hex_allign_y(e_offset),
+			pfp_hex_allign_y(e_offset),
+			pfp_hex_allign_x((e_offset|0xf) - 0xf),
+			pfp_hex_allign_x(e_offset)
+		)
+		pfp_hex_match_range(s_offset, (e_offset|0xf) - 0x10) # calss itself to match the rest of the area
+		return
+
+	# is start offset in hex the same length as end offset? if not split in two and draw separately
+	if max(4, len(hex(s_offset)) - 2) != max(4, len(hex(e_offset)) - 2):
+		next_block = 1 << (4 * max(4, len(hex(s_offset)) - 2))
+		pfp_hex_match_range(s_offset, next_block - 1)
+		pfp_hex_match_range(next_block, e_offset)
+		return
+	else:
+		pfp_highlight(
+			pfp_hex_allign_y(s_offset),
+			pfp_hex_allign_y(e_offset),
+			pfp_hex_allign_x(s_offset),
+			pfp_hex_allign_x(e_offset)
+		)
+		return
 
 def pfp_dom_cursor_moved():
 	line,_ = vim.current.window.cursor
@@ -371,47 +431,15 @@ def pfp_dom_cursor_moved():
 	curr_winnr = vim.current.window.number
 
 	win_goto(winnr)
-	start_line,start_col = pfp_get_line_col(offset)
-	end_line,end_col = pfp_get_line_col(end_offset)
-	vim.command("match none")
-	vim.command("2match none")
-	vim.command("3match none")
+        start_line, start_col = pfp_hex_allign_y(offset), pfp_hex_allign_x(offset)
+	vim.eval("clearmatches()")
 	move_to(start_line, start_col)
 	vim.command("silent! normal! zz")
 
-	if end_line != start_line:
-		first_line_end_col = 4 + (3 * 0x10)
-	else:
-		first_line_end_col = end_col
-
-	if (first_line_end_col - 5) % 3 != 0:
-		first_line_end_col += 1
-
-	command = "match pfp_hex_selection /\\%{start_line}l\\%>{start_col}c\\%<{end_col}c/".format(
-		start_line=start_line,
-		start_col=start_col,
-		end_col=first_line_end_col
-	)
-	vim.command(command)
-
-	# do the block of full lines
-	if end_line - start_line > 1:
-		command = "2match pfp_hex_selection /\\%>{start_line}l\\%<{end_line}l\\%>{start_col}c\\%<{end_col}c/".format(
-			start_line=start_line,
-			end_line=end_line,
-			start_col=5,
-			end_col=(5+(3*0x10))
-		)
-		vim.command(command)
-	
-	# do the last line
-	if end_line != start_line:
-		command = "3match pfp_hex_selection /\\%{end_line}l\\%>{start_col}c\\%<{end_col}c/".format(
-			end_line=end_line,
-			start_col=5,
-			end_col=end_col
-		)
-		vim.command(command)
+        if offset < end_offset:
+            pfp_hex_match_range(offset, end_offset-1)
+        else: # sometimes this happens
+            pfp_hex_match_range(offset, offset)
 
 	win_goto(curr_winnr)
 
