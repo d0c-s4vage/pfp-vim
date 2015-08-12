@@ -100,6 +100,7 @@ def create_scratch(text, fit_to_contents=True, return_to_orig=False, scratch_nam
 
 	buff_puts(text)
 
+	vim.command("let b:pfp_dom_last_line = ''")
 	vim.command("let b:retnr = " + str(retnr))
 
 	# these must be done AFTER the text has been set (because of
@@ -421,7 +422,10 @@ call DefinePfp()
 
 function! PfpHandleCursorMoved()
 	if &ft ==# 'pfp_dom'
-		py pfp_dom_cursor_moved()
+		if b:pfp_dom_last_line != line('.')
+			py pfp_dom_cursor_moved()
+			let b:pfp_dom_last_line = line('.')
+		endif
 	elseif &ft ==# 'pfp_hex'
 		echo "hex"
 	endif
