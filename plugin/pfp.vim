@@ -92,10 +92,11 @@ def create_scratch(text, fit_to_contents=True, return_to_orig=False, scratch_nam
 	orig_range_start = vim.current.range.start
 	orig_range_end = vim.current.range.end
 
-	vim.command("silent keepalt botright vertical {width}split {name}".format(
+	command = "silent keepalt botright vertical {width}split {name}".format(
 		width=max_line_width,
-		name=scratch_name
-	))
+		name="PFP_DOM"
+	)
+	vim.command(command)
 	count = 0
 
 	buff_puts(text)
@@ -295,7 +296,7 @@ def pfp_parse():
 	total_width = 0
 	for window in vim.windows:
 		total_width += window.width
-
+	
 	create_scratch(
 		dom._pfp__show(include_offset=True),
 		width = int(total_width/2), # yes, explicitly make it an int b/c of python3
