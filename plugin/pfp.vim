@@ -165,6 +165,13 @@ def pfp_init(prompt_for_path=False):
 
 def pfp_cursor_moved():
 	pass
+	
+def noCaseCmp(x,y):
+	if x.lower() > y.lower():
+		return 1
+	elif x.lower() < y.lower():
+		return -1
+	return 0
 
 def pfp_choose_template():
 	pfp_init()
@@ -175,6 +182,8 @@ def pfp_choose_template():
 	templates = []
 	for template_dir in template_dirs:
 		templates += glob.glob(os.path.join(os.path.expanduser(template_dir), "*.bt"))
+		
+	templates.sort(cmp=noCaseCmp)
 	
 	for idx,template in enumerate(templates):
 		print("[{:2d}] {}".format(idx, template))
