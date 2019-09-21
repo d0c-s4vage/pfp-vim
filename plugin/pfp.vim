@@ -19,9 +19,10 @@ let s:python_until_eof = s:using_python3 ? "python3 << EOF" : "python << EOF"
 let s:python_command = s:using_python3 ? "py3 " : "py "
 let s:python_import = s:using_python3 ? "py3file" : "pyfile"
 
+let s:script_path = fnamemodify(resolve(expand('<sfile>:p')), ':h:h') . '/pfp_plugin.py'
+
 function! DefinePfp()
-    let script_path = expand('<sfile>:p:h') . '/pfp_plugin.py'
-    exec s:python_import script_path
+    exec s:python_import s:script_path
 endfunction
 
 call DefinePfp()
