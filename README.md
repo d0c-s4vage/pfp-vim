@@ -1,15 +1,34 @@
 # pfp-vim
 
-A vim hex-editor plugin that uses [010 templates](http://www.sweetscape.com/010editor/templates/) to parse binary data using [pfp](https://github.com/d0c-s4vage/pfp)
+A vim hex-editor plugin that uses 
+[010 templates](http://www.sweetscape.com/010editor/templates/) to parse binary
+data using [pfp](https://github.com/d0c-s4vage/pfp). Tested to work with
+vim versions that support python2 or python3.
 
-- [Install](#install)
+- [Install pfp](#install-pfp)
+- [Install Plugin](#install-plugin)
   * [Pathogen](#pathogen)
   * [Vim Plug](#vim-plug)
 - [Usage](#usage)
 - [Notes](#notes)
 - [TODO](#todo)
 
-## Install
+## Install pfp
+
+Install [pfp](https://github.com/d0c-s4vage/pfp):
+
+```bash
+pip install --upgrade pfp
+```
+
+If you see errors that mention not being able to locate `Python.h`, install
+the `python-dev` package and try again:
+
+```bash
+sudo apt-get install python-dev
+```
+
+## Install Plugin
 
 ### Pathogen
 
