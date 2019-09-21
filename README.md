@@ -2,7 +2,16 @@
 
 A vim hex-editor plugin that uses [010 templates](http://www.sweetscape.com/010editor/templates/) to parse binary data using [pfp](https://github.com/d0c-s4vage/pfp)
 
+- [Install](#install)
+  * [Pathogen](#pathogen)
+  * [Vim Plug](#vim-plug)
+- [Usage](#usage)
+- [Notes](#notes)
+- [TODO](#todo)
+
 ## Install
+
+### Pathogen
 
 Clone this repo into `~/.vim/bundle`:
 
@@ -12,6 +21,10 @@ Use your vim plugin manager (pathogen, etc) to load the plugin (you probably
 already have this setup in your `~/.vimrc` or something:
 
 	call pathogen#infect()
+
+### Vim Plug
+
+Add `Plug 'd0c-s4vage/pfp-vim'` to your plug section
 
 ## Usage
 
@@ -30,6 +43,8 @@ displayed on the right.
 
 Navigating the data structure on the right will highlight the relevant
 bytes in the hex-view on the left
+
+![demo.gif](https://user-images.githubusercontent.com/5090146/65373814-4cb8c400-dc37-11e9-8d2a-a1c3de2e0c94.gif)
 
 ## Notes
 
