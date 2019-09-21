@@ -478,7 +478,7 @@ endfunction
 
 call DefinePfpAutoCommands()
 
-highlight pfp_hex_selection ctermfg=red ctermbg=black
+highlight pfp_hex_selection ctermfg=red ctermbg=black guifg=red guibg=black
 
 " -------------------
 " -------------------
